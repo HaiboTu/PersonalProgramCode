@@ -1,0 +1,36 @@
+##############################################################################
+#                               Module Name: mod_delete                      #
+#   This module is used to delete module forecely by revised the refcnt to   #
+#   zero on linux.                                                           #
+#                               Author: Dennis Tu                            #
+#                               Date:   2018.12.19                           #
+##############################################################################
+ 
+1. Check the module info
+$lsmod
+Module                          size            used by
+... ...
+hello                           2048            3    xxx
+... ...
+
+#Note: refcnt(used) is 3
+2. rmmod will failed
+$sudo rmmod hell
+rmmod: ERROR: Module hello is in use by: xxx
+
+3. Reset the refcnd to zero
+$sudo insmod ./mod_delete.ko mod_name=hello
+
+4. Check the module info
+$lsmod
+Module                          size            used by
+... ...
+hello                           2048            0    xxx
+... ...
+
+#Note: refcnt is zero
+
+5. Now you can rmmod hell as follow
+$sudo rmmod hello
+
+
