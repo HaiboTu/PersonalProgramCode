@@ -1,8 +1,8 @@
 
 LOCAL_PATH:=$(shell pwd)
 LOCAL_SRC:=$(wildcard $(LOCAL_PATH)/source/*.c)
-LOCAL_OBJ:=$(subst %.c,%.o,$(LOCAL_SRC))
-LOCAL_CFLAGS:=-I$(LOCAL_PATH)/include
+LOCAL_OBJ:=$(subst .c,.o,$(LOCAL_SRC))
+LOCAL_CFLAGS:=-I$(LOCAL_PATH)/include -DADDX -pthread
 LOCAL_OUT_PATH:=$(LOCAL_PATH)/output
 LOCAL_TARGET:=$(LOCAL_OUT_PATH)/main.out
 
