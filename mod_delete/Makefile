@@ -14,6 +14,7 @@ LOCAL_OBJ = $(patsubst %.c, %.o, $(notdir $(LOCAL_SRC)))
 KVERSION = $(shell uname -r)
 
 KBUILD_PATH := /lib/modules/$(KVERSION)/build
+$(info $(KBUILD_PATH))
 
 KBUILD = $(shell readlink -f $(KBUILD_PATH))
 

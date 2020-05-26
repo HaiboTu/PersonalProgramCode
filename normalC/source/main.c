@@ -13,6 +13,8 @@ sem_t endSema;
 int X,Y;
 int r1,r2;
 
+#define PRINT_ERRR  do{printf("hell\n");}while(0)
+
 void* thread1Func(void* param) {
     while (1) {
         sem_wait(&beginSema1);
@@ -43,6 +45,15 @@ void* thread2Func(void* param) {
 
 
 int main() {
+    if (1)
+        PRINT_ERRR;
+    else
+        printf("Hello.\n");
+
+    pthread_exit(NULL);
+    printf("sizeof long %d\n", sizeof(long));
+
+    return 0;
     sem_init(&beginSema1,0,0);
     sem_init(&beginSema2,0,0);
     sem_init(&endSema,0,0);
