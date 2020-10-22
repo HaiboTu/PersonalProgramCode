@@ -6,79 +6,18 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-sem_t beginSema1;
-sem_t beginSema2;
-sem_t endSema;
-
-int X,Y;
-int r1,r2;
-
-#define PRINT_ERRR  do{printf("hell\n");}while(0)
-
 void* thread1Func(void* param) {
     while (1) {
-        sem_wait(&beginSema1);
-        while ( (rand() / (double)RAND_MAX) > 0.2  ) ;
-        X=1;
-        __asm__ __volatile__("sfence":::"memory");
-        r1 = Y;
-        sem_post(&endSema);
 
     }
+
     return NULL;
-
 }
-
-void* thread2Func(void* param) {
-    while (1) {
-        sem_wait(&beginSema2);
-        while ( (rand() / (double)RAND_MAX) > 0.2  ) ;
-        Y=1;
-        __asm__ __volatile__("sfence":::"memory");
-        r2 = X;
-        sem_post(&endSema);
-
-    }
-    return NULL;
-
-}
-
 
 int main() {
-    if (1)
-        PRINT_ERRR;
-    else
-        printf("Hello.\n");
 
-    pthread_exit(NULL);
-    printf("sizeof long %d\n", sizeof(long));
+	asm volatile (".byte 0x66; clflush (%rax)\n\t");
 
-    return 0;
-    sem_init(&beginSema1,0,0);
-    sem_init(&beginSema2,0,0);
-    sem_init(&endSema,0,0);
-
-    pthread_t thread1,thread2;
-
-    pthread_create(&thread1,NULL,thread1Func,NULL);
-    pthread_create(&thread2,NULL,thread2Func,NULL);
-
-    int detected = 0;
-    int iterations = 0;
-    for (iterations=1;;iterations++) {
-        X=0;
-        Y=0;
-        sem_post(&beginSema1);
-        sem_post(&beginSema2);
-        sem_wait(&endSema);
-        sem_wait(&endSema);
-        if (r1 == 0 && r2 == 0) {
-            detected++;
-            printf("%d reorders detected after %d iterations\n", detected, iterations);
-
-        }
-
-    }
     return 0;
 }
 
