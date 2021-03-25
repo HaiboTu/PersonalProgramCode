@@ -29,7 +29,6 @@ void *producer_thread(void *arg) {
 		for (i = 0; i < MAX_PUSH_NODE; i++) {
 			node = (lf_node *)malloc(sizeof(lf_node));
 			node->cmark = 0;
-			node->push_cnt = rand();
 			push(&lf_head, node);
 		}
 		sem_post(g_sem_full_ptr);
@@ -46,8 +45,7 @@ void *consumer_thread(void *arg) {
 			sem_wait(g_sem_full_ptr);
 		} else {
 			if (node->cmark == CONSUM_MARK) {
-				printf("find consumed node %p, push_cnt 0x%016llx\n", node,
-					node->push_cnt);
+				printf("find consumed node %p\n", node);
 				exit(-1);
 			}
 

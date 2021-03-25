@@ -20,6 +20,19 @@ static inline lf_node *lf_stack_unpack(uint64_t val) {
 	return (lf_node *)(val >> CNT_BITS);
 }
 
+uint64_t rdtsc(void) {
+	uint64_t eax, edx;
+	uint64_t ret = 0;
+
+	asm volatile (
+		"rdtsc \n\t"
+		:"=a"(eax), "=d"(edx)::);
+
+	ret = ((edx << 0x20) | eax);
+
+	return ret;
+}
+
 inline int cas64(uint64_t *val, uint64_t oldv, uint64_t newv) {
 	int ret = 0;
 
@@ -36,7 +49,7 @@ int push(lf_stack *head, lf_node *node) {
 	lf_stack new;
 	uint64_t old;
 
-	new = lf_stack_pack(node, node->push_cnt);
+	new = lf_stack_pack(node, rdtsc());
 	for(;;) {
 		old = *(uint64_t *)(head);
 		node->next = old;

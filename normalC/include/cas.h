@@ -9,7 +9,6 @@
 
 typedef uint64_t lf_stack;
 typedef struct {
-	uint64_t push_cnt;
 	uint64_t next;
 	uint64_t cmark;
 } lf_node;
