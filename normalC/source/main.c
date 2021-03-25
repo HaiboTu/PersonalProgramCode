@@ -10,8 +10,8 @@
 
 #include "cas.h"
 
-#define CONSUMER_COUNT	(0x08)
-#define PRODUCER_COUNT	(0x08)
+#define CONSUMER_COUNT	(0x40)
+#define PRODUCER_COUNT	(0x40)
 #define MAX_PUSH_NODE	(0x100)
 #define CONSUM_MARK		(0x01)
 
@@ -29,9 +29,7 @@ void *producer_thread(void *arg) {
 		for (i = 0; i < MAX_PUSH_NODE; i++) {
 			node = (lf_node *)malloc(sizeof(lf_node));
 			node->cmark = 0;
-			node->next = 0;
-			node->magic = 0x4a;
-
+			node->push_cnt = rand();
 			push(&lf_head, node);
 		}
 		sem_post(g_sem_full_ptr);
@@ -40,7 +38,6 @@ void *producer_thread(void *arg) {
 
 void *consumer_thread(void *arg) {
 	lf_node *node = NULL;
-	pthread_t tid;
 
 	while (1) {
 		node = pop(&lf_head);
@@ -49,13 +46,12 @@ void *consumer_thread(void *arg) {
 			sem_wait(g_sem_full_ptr);
 		} else {
 			if (node->cmark == CONSUM_MARK) {
-				printf("find consumed node %p\n", node);
+				printf("find consumed node %p, push_cnt 0x%016llx\n", node,
+					node->push_cnt);
 				exit(-1);
 			}
 
-			tid = pthread_self();
 			node->cmark = CONSUM_MARK;
-			node->magic = 0x00;
 			free(node);
 		}
 	}
@@ -66,8 +62,8 @@ void *consumer_thread(void *arg) {
 int main(int argc, char *argv[]) {
 	int ret = 0, i = 0;
 
+	srand((unsigned)time(NULL));
 	memset(&lf_head, 0x00, sizeof(lf_stack));
-	printf("lf_headp %p\n", &lf_head);
 
 	g_sem_full_ptr = (sem_t*)malloc(sizeof(sem_t));
 	g_sem_empty_ptr = (sem_t*)malloc(sizeof(sem_t));
