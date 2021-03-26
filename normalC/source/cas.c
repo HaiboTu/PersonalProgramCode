@@ -49,6 +49,7 @@ int push(lf_stack *head, lf_node *node) {
 	lf_stack new;
 	uint64_t old;
 
+	node->push_cnt++;
 	new = lf_stack_pack(node, rdtsc());
 	for(;;) {
 		old = *(uint64_t *)(head);

@@ -9,25 +9,37 @@
 #include <signal.h>
 
 #include "cas.h"
+#include "queue.h"
 
 #define CONSUMER_COUNT	(0x40)
 #define PRODUCER_COUNT	(0x40)
 #define MAX_PUSH_NODE	(0x100)
+#define RESERVE_NODE	(0x10000)
 #define CONSUM_MARK		(0x01)
 
 lf_stack lf_head;
+queue_t queue;
+
 pthread_t producer_threads[PRODUCER_COUNT];
 pthread_t consumer_threads[CONSUMER_COUNT];
 sem_t *g_sem_empty_ptr = NULL; // semaphore for consumer
 sem_t *g_sem_full_ptr = NULL; // semaphore for producer
 
 void *producer_thread(void *arg) {
+	uint64_t item;
 	int i = 0;
 	lf_node *node = NULL;
+
 	while (1) {
 		sem_wait(g_sem_empty_ptr);
 		for (i = 0; i < MAX_PUSH_NODE; i++) {
-			node = (lf_node *)malloc(sizeof(lf_node));
+			if (queue_dequeue(&queue, &item)) {
+				node = (lf_node *)item;
+			} else {
+				node = (lf_node *)malloc(sizeof(lf_node));
+				node->push_cnt = 0;
+			}
+
 			node->cmark = 0;
 			push(&lf_head, node);
 		}
@@ -37,6 +49,7 @@ void *producer_thread(void *arg) {
 
 void *consumer_thread(void *arg) {
 	lf_node *node = NULL;
+	uint64_t item;
 
 	while (1) {
 		node = pop(&lf_head);
@@ -50,7 +63,8 @@ void *consumer_thread(void *arg) {
 			}
 
 			node->cmark = CONSUM_MARK;
-			free(node);
+			item = (uint64_t)node;
+			queue_enqueue(&queue, item);
 		}
 	}
 
@@ -60,7 +74,7 @@ void *consumer_thread(void *arg) {
 int main(int argc, char *argv[]) {
 	int ret = 0, i = 0;
 
-	srand((unsigned)time(NULL));
+	queue_init(&queue, RESERVE_NODE);
 	memset(&lf_head, 0x00, sizeof(lf_stack));
 
 	g_sem_full_ptr = (sem_t*)malloc(sizeof(sem_t));
@@ -85,12 +99,13 @@ int main(int argc, char *argv[]) {
 		pthread_join(consumer_threads[i], NULL);
 	}
 
-
 	sem_destroy(g_sem_full_ptr);
 	sem_destroy(g_sem_empty_ptr);
 
 	free(g_sem_full_ptr);
 	free(g_sem_empty_ptr);
+
+	queue_free(&queue);
 
     return 0;
 }
