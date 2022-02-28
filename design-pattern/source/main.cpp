@@ -4,22 +4,18 @@
 #include "builder/CProduct.h"
 #include "builder/CBuilderA.h"
 #include "builder/CBuilderB.h"
+#include "prototype/CPrototype.h"
 
 int main(int argc ,char *argv[]){
-    IBuilder *pBuilder = new CBuilderA();
-    CDirector *pDirector = new CDirector(pBuilder);
-    CProduct *pProduct;
+    CPrototypeA *pA = new CPrototypeA("CProductA");
+    CPrototypeB *pB = (CPrototypeB *)pA->Clone();
 
-    pDirector->construct();
+    pA->show();
 
-    pProduct = pBuilder->getProduct();
+    delete pA;
 
-    pBuilder = new CBuilderB();
-    pDirector = new CDirector(pBuilder);
+    pB->show();
 
-    pDirector->construct();
-
-    pProduct = pBuilder->getProduct();
 	return 0;
 }
 
