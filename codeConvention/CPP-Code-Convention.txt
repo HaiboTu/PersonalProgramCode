@@ -1,0 +1,37 @@
+1.类名首字母大写，若类名由若干单词拼接，后面的单词首字母均大写, 接口类以I开头，普通类以字母C开头。
+
+如：
+class CTestClass; //普通类
+class ITestClass; //接口类
+
+2.类的成员函数首字母大写，采用驼峰式命名方法。
+
+如：
+void GetElemValue();
+int IsEmpty();
+
+3.变量和参数用小写字母开头的驼峰式命名规则。
+
+如：
+int stateMode;
+bool status;
+
+4.常量全用大写，单词之间用下划线。
+
+如：
+const int RATE = 1.2;
+const int MAX_LENGTH = 1000;
+
+5.静态变量前加s_。
+
+如：
+static int s_rate;
+
+6.类的数据成员前面加m_。
+
+如：
+private: int m_salary;
+
+
+*另外还有下划线命名法，即在单词之间加下划线，不用字母的大小写进行区分。这种方法在linux编程中也很常用。
+
