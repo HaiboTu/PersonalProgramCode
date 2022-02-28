@@ -1,17 +1,25 @@
 #include <iostream>
-#include "CShoesFactory.h"
-#include "IShoes.h"
+#include "builder/IBuilder.h"
+#include "builder/CDirector.h"
+#include "builder/CProduct.h"
+#include "builder/CBuilderA.h"
+#include "builder/CBuilderB.h"
 
 int main(int argc ,char *argv[]){
-    CShoesFactory shoesFactory;
-    IShoes *shoes;
+    IBuilder *pBuilder = new CBuilderA();
+    CDirector *pDirector = new CDirector(pBuilder);
+    CProduct *pProduct;
 
-    shoes = shoesFactory.CreateShoes(LINING);
-    shoes->show();
+    pDirector->construct();
 
-    shoes = shoesFactory.CreateShoes(NIKE);
-    shoes->show();
+    pProduct = pBuilder->getProduct();
 
+    pBuilder = new CBuilderB();
+    pDirector = new CDirector(pBuilder);
+
+    pDirector->construct();
+
+    pProduct = pBuilder->getProduct();
 	return 0;
 }
 

@@ -1,11 +1,18 @@
+#ifndef __IBUILDER_H
+#define __IBUILDER_H
+
 #include <iostream>
+#include "CProduct.h"
 
 class IBuilder {
 public:
-    virtual ~IBuilder() = 0;
+    virtual ~IBuilder() {};
 
-    void buildPartA();
-    void buildPartB();
+    virtual void buildPartA() = 0;
+    virtual void buildPartB() = 0;
 
-    CProduct getProduct();
-}
+    virtual CProduct* getProduct() = 0;
+};
+
+#endif
+

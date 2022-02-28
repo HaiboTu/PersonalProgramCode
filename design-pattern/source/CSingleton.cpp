@@ -1,5 +1,5 @@
 #include <iostream>
-#include "CSingleton.h"
+#include "singleton/CSingleton.h"
 
 CSingleton CSingleton::m_Instance;
 
